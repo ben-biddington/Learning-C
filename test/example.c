@@ -2,10 +2,14 @@
 
 #include <string.h>
 #include <cppunit/TestRunner.h>
+#include <cppunit/TextTestRunner.h>
 #include <cppunit/TestResult.h>
+#include <cppunit/TextTestResult.h>
 #include <cppunit/TestResultCollector.h>
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/BriefTestProgressListener.h>
+#include <cppunit/TextTestProgressListener.h>
+#include <cppunit/TestSuccessListener.h>
 #include <cppunit/extensions/TestFactoryRegistry.h>
 
 using namespace std;
@@ -81,14 +85,22 @@ int main( int ac, char **av ) {
   CPPUNIT_NS::TestResultCollector result;
   controller.addListener( &result );        
 
+  CPPUNIT_NS::TextTestResult text_test_result;
+  controller.addListener( &text_test_result );     
+
+  CPPUNIT_NS::TestSuccessListener success;
+  controller.addListener( &success );     
+
   //--- Add a listener that print dots as test run.
   CPPUNIT_NS::BriefTestProgressListener progress;
   controller.addListener( &progress );      
 
   //--- Add the top suite to the test runner
-  CPPUNIT_NS::TestRunner runner;
+  CPPUNIT_NS::TextTestRunner runner;
   runner.addTest( CPPUNIT_NS::TestFactoryRegistry::getRegistry().makeTest() );
   runner.run( controller );
+
+  CPPUNIT_NS::TestResultCollector::TestFailures failures = result.failures();
 
   return result.wasSuccessful() ? 0 : 1;
 }
