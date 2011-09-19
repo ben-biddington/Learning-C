@@ -122,7 +122,7 @@ protected:
     }
   }
 
-  // See: /usr/include/bits/signum.hxg
+  // See: /usr/include/bits/signum.h
   void you_can_tell_if_a_process_exits_abnormally() {
     pid_t pid = fork();
     int status;
