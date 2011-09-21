@@ -25,14 +25,7 @@
 
 using std::string;
 
-void terminate(int param) {
-  printf ("Terminating program...\n");
-  exit(1);
-}
-
 int main(int argc, char *argv[]) {
-  signal(SIGTERM, terminate);
-
   printf("(%d) args\n", argc);
   
   int watches[argc-1];
@@ -44,13 +37,17 @@ int main(int argc, char *argv[]) {
 
     fd_set file_descriptors;
     FD_ZERO(&file_descriptors);
-    FD_SET(notifier, &file_descriptors);
 
     for (i = 1; i < argc; i++) { 
       char *the_file = argv[i];
 
       int watch = inotify_add_watch(notifier, the_file, IN_MODIFY | IN_CREATE);
-      
+    
+      if (watch < 0) {
+	printf("There was an error adding a watch.");
+	exit(1);
+      }
+  
       FD_SET(watch, &file_descriptors);
 
       printf("Watching file: %s, watch_id=%d\n", the_file, watch);
