@@ -35,17 +35,16 @@ public:
   void tearDown(void) {} 
 
 protected:
+  // TODO: blocks forever seemingly every other time this is run
   void you_can_monitor_a_file_for_changes_using_inotify_and_select() {
     const char *the_file = "selectable_file_example";
 
     int notifier = inotify_init();
-
+    int watch = inotify_add_watch(notifier, the_file, IN_MODIFY | IN_CREATE | IN_DELETE);
+    
     fd_set file_descriptors;
     FD_ZERO(&file_descriptors);
     FD_SET(notifier, &file_descriptors);
-    
-    int watch = inotify_add_watch(notifier, the_file, IN_MODIFY | IN_CREATE);
-      
     FD_SET(watch, &file_descriptors);
 
     touch(the_file);
@@ -65,7 +64,7 @@ protected:
     pid_t pid;    
 
     if ((pid = fork()) == 0) {
-      sleep(1);
+      sleep(2);
 
       int fd = open(the_file, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);  
 
